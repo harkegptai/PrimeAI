@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PrimeAI - Dev Q&A Platform</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Arial', sans-serif; background-color: #f4f7fc; }
+    header { background-color: #222; color: white; padding: 20px; text-align: center; border-bottom: 4px solid #007bff; }
+    header h1 { font-size: 2.5rem; }
+    nav { margin-top: 10px; }
+    nav a { color: #00d0ff; margin: 0 15px; text-decoration: none; font-weight: bold; transition: color 0.3s; cursor: pointer; }
+    nav a:hover { color: white; }
+
+    main { display: flex; padding: 20px; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; }
+    .feed { flex: 3; margin-right: 20px; }
+    .sidebar { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+
+    .post-box, .post, .box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
+    textarea, input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; margin-bottom: 10px; }
+    button { width: 100%; padding: 10px; background-color: #007bff; color: white; font-size: 1.1rem; border: none; border-radius: 8px; cursor: pointer; transition: background-color 0.3s; }
+    button:hover { background-color: #0056b3; }
+
+    .post p { font-size: 1rem; line-height: 1.5; }
+    .answer { margin-top: 15px; padding: 15px; background: #e9f6ff; border-left: 4px solid #007bff; border-radius: 8px; font-size: 1rem; }
+
+    .sidebar h2 { font-size: 1.5rem; color: #222; margin-bottom: 10px; }
+    .sidebar ul { list-style: none; }
+    .sidebar ul li { padding: 8px 0; border-bottom: 1px solid #f4f7fc; }
+
+    .tab { display: none; }
+    .active { display: block; }
+
+    @media (max-width: 768px) {
+      main { flex-direction: column; padding: 10px; }
+      .feed { margin-right: 0; }
+      header h1 { font-size: 2rem; }
+      nav a { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>PrimeAI</h1>
+    <nav>
+      <a onclick="showTab('home')">Home</a>
+      <a onclick="showTab('ask')">Ask</a>
+      <a onclick="showTab('profile')">Profile</a>
+      <a onclick="showTab('contact')">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Home Tab -->
+    <section id="home" class="tab active feed">
+      <div class="post-box">
+        <textarea id="postInput" placeholder="Ask your question using #HTML, #CSS, #JavaScript, #WebDev..."></textarea>
+        <button onclick="createPost()">Post Question</button>
+      </div>
+      <div id="posts"></div>
+    </section>
+
+    <!-- Ask Tab -->
+    <section id="ask" class="tab feed">
+      <div class="box">
+        <h2>Ask a Question</h2>
+        <textarea placeholder="Ask something here... (#HTML, #CSS, etc)"></textarea>
+        <button>Submit</button>
+      </div>
+    </section>
+
+    <!-- Profile Tab -->
+    <section id="profile" class="tab feed">
+      <div class="box">
+        <h2>Your Profile</h2>
+        <p>Name: Developer</p>
+        <p>Email: nkc3909@gmail.com</p>
+        <p>Posts: 0</p>
+      </div>
+    </section>
+
+    <!-- Contact Tab -->
+    <section id="contact" class="tab feed">
+      <div class="box">
+        <h2>Contact Us</h2>
+        <form action="https://formsubmit.co/nkc3909@gmail.com"method="POST">
+          <input type="hidden" name="_captcha" value="false">
+          <label>Your Name:</label>
+          <input type="text" name="name" required>
+          <label>Your Email:</label>
+          <input type="email" name="email" required>
+          <label>Your Message:</label>
+          <textarea name="message" required></textarea>
+          <button type="submit">Send Message</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Trending Tags</h2>
+      <ul>
+        <li>#HTML</li>
+        <li>#CSS</li>
+        <li>#JavaScript</li>
+        <li>#WebDev</li>
+      </ul>
+    </aside>
+  </main>
+
+  <script>
+    function createPost() {
+      const input = document.getElementById('postInput');
+      const posts = document.getElementById('posts');
+      const text = input.value.trim();
+
+      if (text === '') return;
+
+      const postDiv = document.createElement('div');
+      postDiv.className = 'post';
+      postDiv.innerHTML = `<p>${text}</p>`;
+
+      const tag = extractTag(text);
+
+      if (tag) {
+        const answer = generateAnswer(tag);
+        const answerDiv = document.createElement('div');
+        answerDiv.className = 'answer';
+        answerDiv.innerHTML = `<p>${answer}</p>`;
+        postDiv.appendChild(answerDiv);
+      }
+
+      posts.prepend(postDiv);
+      input.value = '';
+    }
+
+    function extractTag(text) {
+      const tags = ['#HTML', '#CSS', '#JavaScript', '#WebDev'];
+      for (const tag of tags) {
+        if (text.includes(tag)) return tag;
+      }
+      return null;
+    }
+
+    function generateAnswer(tag) {
+      switch(tag) {
+        case '#HTML':
+          return `HTML (HyperText Markup Language) structures your webpage. Example: <code>&lt;h1&gt;Hello, World!&lt;/h1&gt;</code>`;
+        case '#CSS':
+          return `CSS styles your HTML. Example: <code>h1 { color: blue; }</code>`;
+        case '#JavaScript':
+          return `JavaScript adds interactivity. Example: <code>document.getElementById('demo').innerHTML = 'Hello';</code>`;
+        case '#WebDev':
+          return `Web development includes front-end (HTML, CSS, JS) and back-end (like Node.js) coding.`;
+        default:
+          return "Please use a valid tag: #HTML, #CSS, #JavaScript, or #WebDev.";
+      }
+    }
+
+    function showTab(tabId) {
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(tab => tab.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+  </script>
+</body>
+</html>
